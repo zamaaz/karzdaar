@@ -1,3 +1,3 @@
-import { AddDebtScreen } from '@/src/screens';
+import AddDebtScreen from '../src/screens/AddDebtScreen';
 
 export default AddDebtScreen;
