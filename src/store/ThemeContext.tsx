@@ -22,27 +22,27 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const [colorScheme, setColorSchemeState] = useState<ColorSchemeName>(
     systemColorScheme || 'light'
   );
+  const [isThemeLoaded, setThemeLoaded] = useState(false);
 
   useEffect(() => {
+    const loadStoredTheme = async () => {
+      try {
+        const storedTheme = await AsyncStorage.getItem(STORAGE_KEYS.THEME_MODE);
+        if (storedTheme) {
+          setColorSchemeState(storedTheme as ColorSchemeName);
+        }
+      } catch (error) {
+        console.error('Error loading stored theme:', error);
+      } finally {
+        setThemeLoaded(true);
+      }
+    };
+
     loadStoredTheme();
   }, []);
 
-  const loadStoredTheme = async () => {
-    try {
-      const storedTheme = await AsyncStorage.getItem(STORAGE_KEYS.THEME_MODE);
-      if (storedTheme) {
-        setColorSchemeState(storedTheme as ColorSchemeName);
-      }
-    } catch (error) {
-      console.error('Error loading stored theme:', error);
-    }
-  };
-
   const setColorScheme = async (scheme: ColorSchemeName) => {
-    // Update UI immediately
     setColorSchemeState(scheme);
-    
-    // Save to storage in background
     try {
       await AsyncStorage.setItem(STORAGE_KEYS.THEME_MODE, scheme);
     } catch (error) {
@@ -52,14 +52,12 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   const toggleColorScheme = () => {
     const newScheme = colorScheme === 'light' ? 'dark' : 'light';
-    // Update UI immediately for instant response
-    setColorSchemeState(newScheme);
-    
-    // Save to storage in background
-    AsyncStorage.setItem(STORAGE_KEYS.THEME_MODE, newScheme).catch((error) => {
-      console.error('Error saving theme:', error);
-    });
+    setColorScheme(newScheme); // Reuse the setColorScheme function
   };
+  
+  if (!isThemeLoaded) {
+    return null;
+  }
 
   return (
     <ThemeContext.Provider value={{ colorScheme, setColorScheme, toggleColorScheme }}>

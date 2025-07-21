@@ -19,7 +19,7 @@ export default function SettingsScreen() {
   };
 
   const handleContact = () => {
-    router.push('/contact');
+    router.push('/contact' as any);
   };
 
   return (

@@ -85,14 +85,16 @@ export default function BiometricLockScreen() {
       if (nextAppState === 'background' || nextAppState === 'inactive') {
         // App is going to background - we're already locked
       } else if (nextAppState === 'active') {
-        // App is coming to foreground - prompt for authentication
-        handleAuthenticate();
+        // App is coming to foreground - only prompt for authentication if we haven't already failed
+        if (authFailedCount === 0) {
+          handleAuthenticate();
+        }
       }
     };
 
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => subscription?.remove();
-  }, [handleAuthenticate]);
+  }, [handleAuthenticate, authFailedCount]);
 
   const handleManualUnlock = () => {
     // Fallback option to unlock without biometric

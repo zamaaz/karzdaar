@@ -3,21 +3,31 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { Platform, AppState } from 'react-native';
 
+export interface NavigationState {
+  routeName: string;
+  params?: any;
+  formData?: any;
+}
+
 export interface BiometricContextType {
   isLocked: boolean;
   isBiometricEnabled: boolean;
   isBiometricSupported: boolean;
   isAuthenticating: boolean;
+  previousNavigationState: NavigationState | null;
   toggleBiometricLock: () => Promise<void>;
   authenticateWithBiometric: () => Promise<boolean>;
   lockApp: () => void;
   unlockApp: () => void;
+  storeNavigationState: (state: NavigationState) => void;
+  clearNavigationState: () => void;
 }
 
 const BiometricContext = createContext<BiometricContextType | undefined>(undefined);
 
 const BIOMETRIC_LOCK_KEY = 'biometric_lock_enabled';
 const APP_LOCKED_KEY = 'app_is_locked';
+const NAVIGATION_STATE_KEY = 'navigation_state_before_lock';
 
 interface BiometricProviderProps {
   children: ReactNode;
@@ -28,11 +38,45 @@ export function BiometricProvider({ children }: BiometricProviderProps) {
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
   const [isBiometricSupported, setIsBiometricSupported] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [previousNavigationState, setPreviousNavigationState] = useState<NavigationState | null>(null);
 
   // Check biometric support and load settings on app start
   useEffect(() => {
     initializeBiometric();
+    cleanupExpiredData();
   }, []);
+
+  const cleanupExpiredData = async () => {
+    try {
+      // Get all AsyncStorage keys
+      const allKeys = await AsyncStorage.getAllKeys();
+      
+      // Filter for form data and navigation state keys
+      const dataKeys = allKeys.filter(key => 
+        key.startsWith('form_data_') || key === NAVIGATION_STATE_KEY
+      );
+      
+      // Check each key and remove if expired
+      for (const key of dataKeys) {
+        const stored = await AsyncStorage.getItem(key);
+        if (stored) {
+          try {
+            const { timestamp } = JSON.parse(stored);
+            const oneHour = 60 * 60 * 1000;
+            
+            if (Date.now() - timestamp > oneHour) {
+              await AsyncStorage.removeItem(key);
+            }
+          } catch {
+            // If parsing fails, remove the invalid data
+            await AsyncStorage.removeItem(key);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error cleaning up expired data:', error);
+    }
+  };
 
   // Handle app state changes for auto-locking
   useEffect(() => {
@@ -42,6 +86,7 @@ export function BiometricProvider({ children }: BiometricProviderProps) {
       if (isBiometricEnabled) {
         if (nextAppState === 'background' || nextAppState === 'inactive') {
           // App is going to background - lock it
+          // Note: Navigation state will be stored by the app layout component
           lockApp();
         }
         // When app becomes active, the lock screen will handle authentication
@@ -171,6 +216,41 @@ export function BiometricProvider({ children }: BiometricProviderProps) {
   const unlockApp = async () => {
     setIsLocked(false);
     await AsyncStorage.setItem(APP_LOCKED_KEY, 'false');
+    
+    // Load any stored navigation state
+    try {
+      const storedState = await AsyncStorage.getItem(NAVIGATION_STATE_KEY);
+      if (storedState) {
+        const { data, timestamp } = JSON.parse(storedState);
+        
+        // Check if navigation state is not too old (5 minutes max)
+        const fiveMinutes = 5 * 60 * 1000;
+        if (Date.now() - timestamp < fiveMinutes) {
+          setPreviousNavigationState(data);
+        }
+        
+        // Always clear the stored state after loading (or if expired)
+        await AsyncStorage.removeItem(NAVIGATION_STATE_KEY);
+      }
+    } catch (error) {
+      console.error('Error loading navigation state:', error);
+    }
+  };
+
+  const storeNavigationState = async (state: NavigationState) => {
+    try {
+      const dataWithTimestamp = {
+        data: state,
+        timestamp: Date.now(),
+      };
+      await AsyncStorage.setItem(NAVIGATION_STATE_KEY, JSON.stringify(dataWithTimestamp));
+    } catch (error) {
+      console.error('Error storing navigation state:', error);
+    }
+  };
+
+  const clearNavigationState = () => {
+    setPreviousNavigationState(null);
   };
 
   const value: BiometricContextType = {
@@ -178,10 +258,13 @@ export function BiometricProvider({ children }: BiometricProviderProps) {
     isBiometricEnabled,
     isBiometricSupported,
     isAuthenticating,
+    previousNavigationState,
     toggleBiometricLock,
     authenticateWithBiometric,
     lockApp,
     unlockApp,
+    storeNavigationState,
+    clearNavigationState,
   };
 
   return (

@@ -6,6 +6,7 @@ import { ScreenLayout } from '@/src/components/common';
 import { useDebtContext } from '@/src/store';
 import { DebtType } from '@/src/types';
 import { useThemedStyles } from '@/src/hooks/useThemedColors';
+import { useFormPersistence } from '@/src/hooks';
 import { DatePickerModal, TimePickerModal } from 'react-native-paper-dates';
 
 export default function AddDebtScreen() {
@@ -27,11 +28,42 @@ export default function AddDebtScreen() {
     transactionDate: existingDebt?.date || new Date(),
   });
   
+  // Form persistence for biometric lock scenarios
+  const { restoreFormData, clearFormData } = useFormPersistence({
+    formId: 'add-debt',
+    formData: {
+      name: formData.name,
+      amount: formData.amount,
+      note: formData.note,
+      type: formData.type,
+      dueDate: formData.dueDate,
+    },
+    enabled: !isEditMode, // Only persist for new entries, not edits
+  });
+  
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [timePickerOpen, setTimePickerOpen] = useState(false);
+
+  // Restore form data on component mount if available
+  useEffect(() => {
+    if (!isEditMode) {
+      restoreFormData('add-debt').then((restoredData) => {
+        if (restoredData) {
+          setFormData(prev => ({
+            ...prev,
+            name: restoredData.name || prev.name,
+            amount: restoredData.amount || prev.amount,
+            note: restoredData.note || prev.note,
+            type: restoredData.type || prev.type,
+            dueDate: restoredData.dueDate || prev.dueDate,
+          }));
+        }
+      });
+    }
+  }, [isEditMode, restoreFormData]);
 
   // Update form data when existing debt changes
   useEffect(() => {
@@ -51,7 +83,7 @@ export default function AddDebtScreen() {
 
   // Format date and time for display
   const formatDate = (date: Date): string => {
-    return date.toLocaleDateString('en-GB', {
+    return date.toLocaleDateString('en-US', {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
@@ -168,6 +200,12 @@ export default function AddDebtScreen() {
 
       // Show success and go back
       setShowSuccess(true);
+      
+      // Clear any persisted form data on successful submission
+      if (!isEditMode) {
+        clearFormData('add-debt');
+      }
+      
       setTimeout(() => {
         router.back();
       }, 1500);
@@ -313,13 +351,12 @@ export default function AddDebtScreen() {
 
         {/* Date Picker Modal */}
         <DatePickerModal
-          locale="en-GB"
+          locale='en-US'
           mode="single"
           visible={datePickerOpen}
           onDismiss={() => setDatePickerOpen(false)}
           date={formData.transactionDate}
           onConfirm={handleDateConfirm}
-          presentationStyle="overFullScreen"
         />
 
         {/* Time Picker Modal */}

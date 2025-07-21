@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text, TextInput, Button, Card } from 'react-native-paper';
 import { router } from 'expo-router';
 import { ScreenLayout, AlertDialog } from '@/src/components/common';
 import { useDebtContext } from '@/src/store';
 import { useThemedStyles } from '@/src/hooks/useThemedColors';
+import { useFormPersistence } from '@/src/hooks';
 
 export default function AddCustomerScreen() {
   const { addCustomer, customerExists } = useDebtContext();
   const styles = useThemedStyles(createStyles);
 
   const [customerName, setCustomerName] = useState('');
+  
+  // Form persistence for biometric lock scenarios
+  const { restoreFormData, clearFormData } = useFormPersistence({
+    formId: 'add-customer',
+    formData: { customerName },
+    enabled: true,
+  });
+  
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   
@@ -20,6 +29,15 @@ export default function AddCustomerScreen() {
     title: string;
     message: string;
   }>({ visible: false, title: '', message: '' });
+
+  // Restore form data on component mount if available
+  useEffect(() => {
+    restoreFormData('add-customer').then((restoredData) => {
+      if (restoredData && restoredData.customerName) {
+        setCustomerName(restoredData.customerName);
+      }
+    });
+  }, [restoreFormData]);
 
   // Helper function for showing alert dialogs
   const showAlert = (title: string, message: string) => {
@@ -62,6 +80,9 @@ export default function AddCustomerScreen() {
     try {
       // Create the customer using the context method
       await addCustomer(customerName.trim());
+      
+      // Clear any persisted form data on successful submission
+      clearFormData('add-customer');
       
       // Show success message and navigate back
       showAlert(
@@ -142,7 +163,7 @@ export default function AddCustomerScreen() {
                 loading={isLoading}
                 disabled={isLoading || !customerName.trim()}
               >
-                Create Customer
+                Create
               </Button>
             </View>
           </Card.Content>
