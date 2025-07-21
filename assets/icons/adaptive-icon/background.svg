@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Layer for Android Adaptive Icon -->
+  <defs>
+    <!-- Material You adaptive gradient -->
+    <linearGradient id="backgroundGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6750A4;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#7C4DFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9C27B0;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Dynamic theming compatible colors (will be overridden by Material You) -->
+    <linearGradient id="dynamicGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--md-sys-color-primary-container, #6750A4);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:var(--md-sys-color-secondary-container, #9C27B0);stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle following Material You guidelines -->
+  <circle cx="512" cy="512" r="512" fill="url(#backgroundGradient)"/>
+  
+  <!-- Subtle pattern for depth -->
+  <circle cx="512" cy="512" r="480" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+  <circle cx="512" cy="512" r="440" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+</svg>

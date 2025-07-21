@@ -1,6 +1,9 @@
 {
+  "cli": {
+    "appVersionSource": "local"
+  },
   "expo": {
-    "name": "karzdaar",
+    "name": "Karzdaar",
     "slug": "karzdaar",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,15 +11,76 @@
     "scheme": "karzdaar",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "privacy": "public",
+    "platforms": [
+      "android",
+      "ios",
+      "web"
+    ],
+    "description": "Karzdaar - Your trusted financial companion for managing expenses and budgets",
+    "keywords": [
+      "finance",
+      "budget",
+      "expense",
+      "money",
+      "tracker"
+    ],
+    "author": "MAAZ ZAMA",
+    "githubUrl": "https://github.com/zamaaz/karzdaar",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.karzdaar.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "LSApplicationCategoryType": "public.app-category.finance",
+        "NSCameraUsageDescription": "This app uses camera to scan receipts and documents",
+        "NSPhotoLibraryUsageDescription": "This app accesses photo library to attach receipt images"
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/adaptive-icon/foreground.png",
+        "backgroundImage": "./assets/images/adaptive-icon/background.png",
+        "monochromeImage": "./assets/images/adaptive-icon/monochrome.png",
+        "backgroundColor": "#6750A4"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.karzdaar.app",
+      "versionCode": 1,
+      "compileSdkVersion": 34,
+      "targetSdkVersion": 34,
+      "buildToolsVersion": "34.0.0",
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
+      "blockedPermissions": [
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": ""
+        }
+      },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "karzdaar.com"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -31,12 +95,18 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#6750A4"
         }
-      ]
+      ],
+      "react-native-edge-to-edge"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "9a668ee3-dd06-48d9-a04a-6c90752a1936"
+      }
     }
   }
 }

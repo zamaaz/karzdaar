@@ -1,6 +1,6 @@
 import React from 'react';
-import { ScrollView, StyleSheet, ViewStyle } from 'react-native';
-import { Surface, useTheme } from 'react-native-paper';
+import { StyleSheet, ViewStyle, ScrollView, View } from 'react-native';
+import { useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ScreenLayoutProps {
@@ -39,9 +39,9 @@ export const ScreenLayout: React.FC<ScreenLayoutProps> = ({
 
   return (
     <SafeAreaView style={containerStyle}>
-      <Surface style={[styles.surface, contentContainerStyle]}>
+      <View style={[styles.surface, contentContainerStyle]}>
         {children}
-      </Surface>
+      </View>
     </SafeAreaView>
   );
 };

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Foreground Layer for Android Adaptive Icon -->
+  <defs>
+    <!-- Shadow filters for depth -->
+    <filter id="iconShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="8"/>
+      <feOffset dx="0" dy="4" result="offset"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Icon gradient -->
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F8F9FA;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main icon group - centered and sized for safe area -->
+  <g transform="translate(512, 512)" filter="url(#iconShadow)">
+    <!-- Indian Rupee Symbol with modern geometric design -->
+    <g transform="scale(0.8, 0.8)">
+      <!-- Rupee symbol base -->
+      <path d="M-80 -120 L80 -120 L80 -80 L-20 -80 C20 -40, 60 0, 80 40 L80 80 L40 80 C20 40, -20 0, -60 -40 L80 -40 L80 0 L-80 0 Z" 
+            fill="url(#iconGradient)" 
+            stroke="#FFFFFF" 
+            stroke-width="4" 
+            stroke-linejoin="round"/>
+      
+      <!-- Balance scale elements for debt management concept -->
+      <!-- Left scale pan -->
+      <ellipse cx="-100" cy="60" rx="25" ry="8" 
+               fill="url(#iconGradient)" 
+               stroke="#FFFFFF" 
+               stroke-width="2"/>
+      
+      <!-- Right scale pan -->
+      <ellipse cx="100" cy="60" rx="25" ry="8" 
+               fill="url(#iconGradient)" 
+               stroke="#FFFFFF" 
+               stroke-width="2"/>
+      
+      <!-- Scale arms -->
+      <line x1="-100" y1="52" x2="100" y2="52" 
+            stroke="#FFFFFF" 
+            stroke-width="3" 
+            stroke-linecap="round"/>
+      
+      <!-- Central pivot -->
+      <circle cx="0" cy="45" r="6" 
+              fill="url(#iconGradient)" 
+              stroke="#FFFFFF" 
+              stroke-width="2"/>
+      
+      <!-- Support chains -->
+      <line x1="-100" y1="52" x2="-100" y2="40" 
+            stroke="#FFFFFF" 
+            stroke-width="2"/>
+      <line x1="100" y1="52" x2="100" y2="40" 
+            stroke="#FFFFFF" 
+            stroke-width="2"/>
+      
+      <!-- Geometric accent elements -->
+      <circle cx="-120" cy="-100" r="4" 
+              fill="#FFFFFF" 
+              opacity="0.6"/>
+      <circle cx="120" cy="-100" r="4" 
+              fill="#FFFFFF" 
+              opacity="0.6"/>
+      <circle cx="-120" cy="80" r="4" 
+              fill="#FFFFFF" 
+              opacity="0.6"/>
+      <circle cx="120" cy="80" r="4" 
+              fill="#FFFFFF" 
+              opacity="0.6"/>
+    </g>
+  </g>
+</svg>
